@@ -129,7 +129,12 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block
+            display: block;
+            transition: transform 0.35s ease;
+        }
+
+        .thumb:hover img {
+            transform: scale(1.2);
         }
 
         .pagination {
@@ -178,7 +183,7 @@
             transform: translateY(0)
         }
 
-        /* POPUP phủ toàn màn hình */
+        /* POPUP */
         .popup {
             position: fixed;
             inset: 0;
@@ -195,7 +200,13 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
             cursor: pointer;
+            transition: transform 0.35s ease, filter 0.35s ease;
         }
+
+        /* .popup img:hover {
+            transform: scale(1.2);
+            filter: brightness(1.2);
+        } */
     </style>
 </head>
 
@@ -218,9 +229,13 @@
 
     <div id="toast" class="toast">Đã copy tên vào clipboard</div>
 
-    <!-- Popup toàn màn hình -->
-    <div id="popup" class="popup">
-        <img src="popuplazada.JPG" alt="Popup quảng cáo" />
+    <!-- Popup 1 -->
+    <div id="popup1" class="popup">
+        <img src="popuplazada.JPG" alt="Popup quảng cáo 1" />
+    </div>
+    <!-- Popup 2 -->
+    <div id="popup2" class="popup">
+        <img src="popuplazada.JPG" alt="Popup quảng cáo 2" />
     </div>
 
     <script>
@@ -230,6 +245,7 @@
             try {
                 const res = await fetch("data.json");
                 DATA = await res.json();
+                DATA = DATA.reverse(); // đảo ngược danh sách
                 renderList();
             } catch (err) {
                 console.error("Không thể tải dữ liệu:", err);
@@ -341,23 +357,32 @@
         });
 
         // Popup logic
-        const popup = $('#popup');
-        const popupImg = popup.querySelector('img');
-        let popupShown = false;
+        const popup1 = $('#popup1');
+        const popup2 = $('#popup2');
+        const popup1Img = popup1.querySelector('img');
+        const popup2Img = popup2.querySelector('img');
+        let shown10 = false;
+        let shown500 = false;
 
         window.addEventListener('scroll', () => {
-            if (!popupShown && window.scrollY >= 10) {
-                popup.style.display = 'flex';
-                popupShown = true;
+            if (!shown10 && window.scrollY >= 10) {
+                popup1.style.display = 'flex';
+                shown10 = true;
+            }
+            if (!shown500 && window.scrollY >= 500) {
+                popup2.style.display = 'flex';
+                shown500 = true;
             }
         });
 
-        popupImg.addEventListener('click', () => {
-            popup.style.display = 'none';
-            window.open(
-                'https://www.facebook.com/messages/t/27888911927422700/#',
-                // '_blank'
-            );
+        popup1Img.addEventListener('click', () => {
+            popup1.style.display = 'none';
+            window.open('https://www.facebook.com/messages/t/27888911927422700/#', '_blank');
+        });
+
+        popup2Img.addEventListener('click', () => {
+            popup2.style.display = 'none';
+            window.open('https://www.facebook.com/messages/t/27888911927422700/#', '_blank');
         });
 
         loadData();
