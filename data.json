@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Sản phẩm A",
+        "desc": "Đây là mô tả ngắn gọn của sản phẩm A, có chất lượng tốt và giá hợp lý.",
+        "img": "https://picsum.photos/id/1015/480/320"
+    },
+    {
+        "id": 2,
+        "name": "Sản phẩm B",
+        "desc": "Sản phẩm B nổi bật với thiết kế hiện đại, phù hợp nhiều nhu cầu.",
+        "img": "https://picsum.photos/id/1020/480/320"
+    },
+    {
+        "id": 3,
+        "name": "Sản phẩm C",
+        "desc": "Một lựa chọn phổ biến, sản phẩm C được nhiều khách hàng yêu thích.",
+        "img": "https://picsum.photos/id/1035/480/320"
+    },
+    {
+        "id": 4,
+        "name": "Sản phẩm D",
+        "desc": "Sản phẩm D có độ bền cao, thích hợp sử dụng lâu dài.",
+        "img": "https://picsum.photos/id/1041/480/320"
+    },
+    {
+        "id": 5,
+        "name": "Sản phẩm E",
+        "desc": "Được thiết kế tinh tế, sản phẩm E là sự lựa chọn sang trọng.",
+        "img": "https://picsum.photos/id/1052/480/320"
+    },
+    {
+        "id": 6,
+        "name": "Sản phẩm F",
+        "desc": "Sản phẩm F đáp ứng tốt các tiêu chuẩn về chất lượng và an toàn.",
+        "img": "https://picsum.photos/id/1068/480/320"
+    }
+]

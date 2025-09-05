@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Danh sách thông tin có phân trang</title>
+    <style>
+        :root {
+            --bg: #0b1020;
+            --card: #121830;
+            --muted: #8aa0c7;
+            --text: #eaf0ff;
+            --primary: #4f8cff;
+            --primary-2: #7aa8ff;
+            --border: #233156;
+            --ok: #14d06e;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, #0a0f1e 0%, #0e1630 100%);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            font-size: clamp(20px, 2.8vw, 32px);
+            font-weight: 800;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .select,
+        .search {
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 10px 12px;
+            min-height: 42px;
+            outline: none;
+        }
+
+        .search {
+            width: min(360px, 80vw)
+        }
+
+        .grid {
+            display: grid;
+            gap: 14px;
+        }
+
+        .card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            background: linear-gradient(180deg, rgba(79, 140, 255, 0.08), rgba(79, 140, 255, 0.02));
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            padding: 14px;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .name {
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1.3;
+            color: var(--primary-2);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .name .copy-icon {
+            opacity: .75;
+            transition: transform .12s ease, opacity .12s ease;
+        }
+
+        .name:hover .copy-icon {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .desc {
+            color: #cfe0ff;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .thumb {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            height: 280px;
+            background: #0b142d;
+            display: grid;
+            place-items: center;
+        }
+
+        .thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 18px 0 8px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            min-width: 40px;
+        }
+
+        .page-btn.active {
+            background: var(--primary);
+            border-color: transparent
+        }
+
+        .toast {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(20, 208, 110, .12);
+            color: #d2ffe9;
+            border: 1px solid rgba(20, 208, 110, .35);
+            backdrop-filter: blur(6px);
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform .18s ease, opacity .18s ease;
+            font-weight: 600;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        /* POPUP phủ toàn màn hình */
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Danh sách thông tin</div>
+            <div class="controls">
+                <input id="search" class="search" placeholder="Tìm theo tên..." />
+                <select id="pageSize" class="select">
+                    <option value="4">4 / trang</option>
+                    <option value="6" selected>6 / trang</option>
+                    <option value="8">8 / trang</option>
+                </select>
+            </div>
+        </div>
+        <div id="list" class="grid"></div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <div id="toast" class="toast">Đã copy tên vào clipboard</div>
+
+    <!-- Popup toàn màn hình -->
+    <div id="popup" class="popup">
+        <img src="popuplazada.JPG" alt="Popup quảng cáo" />
+    </div>
+
+    <script>
+        let DATA = [];
+
+        async function loadData() {
+            try {
+                const res = await fetch("data.json");
+                DATA = await res.json();
+                renderList();
+            } catch (err) {
+                console.error("Không thể tải dữ liệu:", err);
+            }
+        }
+
+        let state = { page: 1, size: 6, keyword: "" };
+
+        const $ = sel => document.querySelector(sel);
+        const listEl = $('#list');
+        const pagEl = $('#pagination');
+
+        function copyToClipboard(text) {
+            return navigator.clipboard?.writeText(text)
+                ?? Promise.reject(new Error('Clipboard API không khả dụng'));
+        }
+        let toastTimer;
+        function showToast(msg = "Đã copy tên vào clipboard") {
+            const t = $('#toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+        }
+
+        function paginate(items, page, size) {
+            const total = items.length;
+            const pages = Math.max(1, Math.ceil(total / size));
+            const start = (page - 1) * size;
+            const end = start + size;
+            return { slice: items.slice(start, end), total, pages };
+        }
+
+        function filterData() {
+            const kw = state.keyword.trim().toLowerCase();
+            if (!kw) return DATA;
+            return DATA.filter(x => x.name.toLowerCase().includes(kw));
+        }
+
+        function renderList() {
+            const filtered = filterData();
+            const { slice, pages } = paginate(filtered, state.page, state.size);
+            listEl.innerHTML = slice.map(item => `
+        <article class="card">
+          <div class="info">
+            <a href="#" class="name" data-name="${item.name}">
+              <svg class="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 8V6.2C8 5.08 8 4.52 8.218 4.092C8.40973 3.71634 8.71634 3.40973 9.09202 3.21802C9.52001 3 10.08 3 11.2 3H16.8C17.92 3 18.48 3 18.908 3.21802C19.2837 3.40973 19.5903 3.71634 19.782 4.09202C20 4.52001 20 5.08 20 6.2V11.8C20 12.92 20 13.48 19.782 13.908C19.5903 14.2837 19.2837 14.5903 18.908 14.782C18.48 15 17.92 15 16.8 15H15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="4" y="9" width="12" height="12" rx="2.4" stroke="currentColor" stroke-width="1.6"/></svg>
+              <span>${item.name}</span>
+            </a>
+            <div class="desc">${item.desc}</div>
+          </div>
+          <div class="thumb">
+            <img src="${item.img}" alt="Hình minh họa của ${item.name}" loading="lazy"/>
+          </div>
+        </article>
+      `).join('');
+            renderPagination(pages);
+        }
+
+        function renderPagination(pages) {
+            const p = state.page;
+            function btn(label, page, disabled = false, active = false) {
+                return `<button class="page-btn ${active ? 'active' : ''}" ${disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`
+            }
+            const max = pages;
+            const parts = [];
+            parts.push(btn('«', 1, p === 1));
+            parts.push(btn('‹', Math.max(1, p - 1), p === 1));
+            const spread = 2;
+            const start = Math.max(1, p - spread);
+            const end = Math.min(max, p + spread);
+            for (let i = start; i <= end; i++) parts.push(btn(i, i, false, i === p));
+            parts.push(btn('›', Math.min(max, p + 1), p === max));
+            parts.push(btn('»', max, p === max));
+            pagEl.innerHTML = parts.join('');
+        }
+
+        document.addEventListener('click', (e) => {
+            const a = e.target.closest('a.name');
+            if (a) {
+                e.preventDefault();
+                const name = a.getAttribute('data-name');
+                copyToClipboard(name)
+                    .then(() => showToast('Đã copy: ' + name))
+                    .catch(() => showToast('Không copy được'));
+                return;
+            }
+            const btn = e.target.closest('.page-btn');
+            if (btn) {
+                const page = parseInt(btn.getAttribute('data-page'), 10);
+                if (page && page !== state.page) {
+                    state.page = page;
+                    renderList();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        });
+
+        $('#pageSize').addEventListener('change', (e) => {
+            state.size = parseInt(e.target.value, 10) || 6;
+            state.page = 1;
+            renderList();
+        });
+
+        $('#search').addEventListener('input', (e) => {
+            state.keyword = e.target.value || '';
+            state.page = 1;
+            renderList();
+        });
+
+        // Popup logic
+        const popup = $('#popup');
+        const popupImg = popup.querySelector('img');
+        let popupShown = false;
+
+        window.addEventListener('scroll', () => {
+            if (!popupShown && window.scrollY >= 10) {
+                popup.style.display = 'flex';
+                popupShown = true;
+            }
+        });
+
+        popupImg.addEventListener('click', () => {
+            popup.style.display = 'none';
+            window.open(
+                'https://www.facebook.com/messages/t/27888911927422700/#',
+                // '_blank'
+            );
+        });
+
+        loadData();
+    </script>
+</body>
+
+</html>
