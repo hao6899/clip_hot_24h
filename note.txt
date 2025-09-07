@@ -1,0 +1,8 @@
+"img": "images/sanphamA.jpg"
+
+
+    {
+        "name": "FSDSS-867",
+        "desc": "Cậu sinh viên may mắn và chị gái sửa điều hoà An Mitsumi.",
+        "img": "images/may_lanh.jpg"
+    },
