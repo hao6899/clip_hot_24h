@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Show 2 Videos</title>
+    <style>
+        :root {
+            --gap: 16px
+        }
+
+        .popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .popup img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
+            transition: transform 0.35s ease, filter 0.35s ease;
+        }
+
+        body {
+            font-family: Inter, system-ui, Arial;
+            margin: 24px;
+            background: #f7f7fb;
+            color: #111
+        }
+
+        h1 {
+            font-size: 20px;
+            margin-bottom: 12px
+        }
+
+        .wrap {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--gap);
+            align-items: start
+        }
+
+        @media (max-width:800px) {
+            .wrap {
+                grid-template-columns: 1fr
+            }
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 6px 18px rgba(20, 20, 50, 0.06)
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background: #000;
+            display: block
+        }
+
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px
+        }
+
+        .meta .title {
+            font-weight: 600
+        }
+
+        .controls {
+            gap: 8px;
+            display: flex
+        }
+
+        button {
+            border: 0;
+            background: #2563eb;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            cursor: pointer
+        }
+
+        button.secondary {
+            background: #e6edf9;
+            color: #0b3b91
+        }
+    </style>
+</head>
+
+<body>
+    <div id="popup1" class="popup">
+        <img src="popup_thankyou.png" alt="Popup quảng cáo 1" />
+    </div>
+    <!-- Popup 2 -->
+    <div id="popup2" class="popup">
+        <img src="popup_lazada.jpg" alt="Popup quảng cáo 2" />
+    </div>
+    <!-- <h1>Trang demo: 2 video</h1>
+    <p>Thay src bằng đường dẫn video của bạn (.mp4, .webm...) hoặc đường dẫn file local.</p> -->
+    <h1 style="color: red;margin: auto;">Cãi nhau xong anh zai đòi lại quà và cái kết</h1>
+    <p>Cãi nhau xong anh zai đòi lại quà và cái kết, ae có ny nếu chia tay đừng đòi lại quà nhé.
+
+        Cấm trẻ con xem, nội dung có thể gây có chịu với một số người.</p>
+    <div class="wrap">
+        <div class="card">
+            <video id="v1" controls preload="metadata" poster="">
+                <!-- Ví dụ dùng remote url: thay bằng link của bạn -->
+                <source src="495783009247978925.mp4" type="video/mp4">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+            <!-- <div class="meta">
+                <div class="title">Video 1</div>
+                <div class="controls">
+                    <button onclick="togglePlay('v1')">Play / Pause</button>
+                    <button class="secondary" onclick="makeFullscreen('v1')">Fullscreen</button>
+                </div>
+            </div> -->
+        </div>
+
+        <div class="card">
+            <video id="v2" controls preload="metadata" poster="">
+                <!-- Ví dụ khác -->
+                <source src="1251681552284209397.mp4" type="video/webm">
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+            </video>
+            <!-- <div class="meta">
+                <div class="title">Video 2</div>
+                <div class="controls">
+                    <button onclick="togglePlay('v2')">Play / Pause</button>
+                    <button class="secondary" onclick="makeFullscreen('v2')">Fullscreen</button>
+                </div>
+            </div> -->
+        </div>
+    </div>
+
+    <script>
+        const popup1 = document.getElementById('popup1');
+        const popup2 = document.getElementById('popup2');
+        const popup1Img = popup1.querySelector('img');
+        const popup2Img = popup2.querySelector('img');
+
+
+        let shown10 = false;
+        let shown500 = false;
+
+        window.addEventListener('scroll', () => {
+            if (!shown10 && window.scrollY >= 10) {
+                popup1.style.display = 'flex';
+                shown10 = true;
+            }
+            if (!shown500 && window.scrollY >= 500) {
+                popup2.style.display = 'flex';
+                shown500 = true;
+            }
+        });
+
+        popup1Img.addEventListener('click', () => {
+            popup1.style.display = 'none';
+            window.open('https://s.shopee.vn/8zvd8kiID5', '_blank');
+        });
+
+        popup2Img.addEventListener('click', () => {
+            popup2.style.display = 'none';
+            window.open('https://s.shopee.vn/gGVD5ilTm', '_blank');
+        });
+        function togglePlay(id) {
+            const v = document.getElementById(id);
+            if (!v) return;
+            if (v.paused) v.play(); else v.pause();
+        }
+        function makeFullscreen(id) {
+            const v = document.getElementById(id);
+            if (!v) return;
+            if (v.requestFullscreen) v.requestFullscreen();
+            else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+        }
+
+        // Optional: sync pause so only one plays at a time
+        const videos = document.querySelectorAll('video');
+        videos.forEach(v => {
+            v.addEventListener('play', () => {
+                videos.forEach(o => { if (o !== v) o.pause(); });
+            });
+        });
+    </script>
+</body>
+
+</html>
