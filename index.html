@@ -359,15 +359,17 @@
 
         let shown10 = false;
         let shown500 = false;
-
         window.addEventListener('scroll', () => {
             if (!shown10 && window.scrollY >= 10) {
                 popup1.style.display = 'flex';
                 shown10 = true;
             }
             if (!shown500 && window.scrollY >= 500) {
-                popup2.style.display = 'flex';
-                shown500 = true;
+                // chỉ mở popup2 nếu popup1 đang đóng
+                if (popup1.style.display === 'none') {
+                    popup2.style.display = 'flex';
+                    shown500 = true;
+                }
             }
         });
 
